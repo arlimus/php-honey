@@ -1,0 +1,23 @@
+{
+    "name": "arlimus/php-honey",
+    "description": "HoneyFlow: production and distribution planning for honey producers",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "ext-pdo": "*",
+        "guzzlehttp/guzzle": "7.4.0",
+        "guzzlehttp/psr7": "2.1.0",
+        "twig/twig": "3.4.2",
+        "phpmailer/phpmailer": "6.4.0",
+        "firebase/php-jwt": "5.5.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "HoneyFlow\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

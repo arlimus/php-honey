@@ -1,0 +1,3505 @@
+{
+  "schema_version": "1.1",
+  "report": {
+    "schema_version": "1.24",
+    "results": [
+      {
+        "check_id": "dockerfile-missing-user-instruction",
+        "path": "Dockerfile",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 6,
+          "offset": 5
+        },
+        "extra": {
+          "title": "Dockerfile missing user instruction",
+          "message": "The Dockerfile never sets a USER instruction, so the container runs as root by default. A process running as root that is compromised can more easily escalate to the host. Create and switch to an unprivileged user (e.g. RUN adduser -D app \u0026\u0026 USER app) before the container starts.",
+          "confidence": "MEDIUM",
+          "severity": "WARNING",
+          "lines": "FROM ",
+          "metadata": {
+            "category": "security",
+            "confidence": "MEDIUM",
+            "cwe": [
+              "CWE-250: Execution with Unnecessary Privileges"
+            ],
+            "impact": "MEDIUM",
+            "likelihood": "MEDIUM",
+            "owasp": [
+              "A04:2021",
+              "A06:2025"
+            ],
+            "subcategory": [
+              "audit"
+            ],
+            "technology": [
+              "docker"
+            ]
+          },
+          "fingerprint": "fc66033684a98775",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Create a non-root user and switch to it with a USER instruction so the container does not run as root.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 0,
+                "end_byte": 5,
+                "start_line": 1,
+                "end_line": 1
+              },
+              "strategy": "Create a non-root user and switch to it with a USER instruction so the container does not run as root.",
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding dockerfile-missing-user-instruction no longer fires in the changed region",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "dockerfile",
+          "before": "",
+          "after": "\nRUN apt-get update \\\n    \u0026\u0026 apt-get install -y --no-install-recommends cups-client unzip \\"
+        },
+        "remediation": {
+          "description": "Create a non-root user and switch to it with a USER instruction so the container does not run as root.",
+          "has_autofix": false
+        }
+      },
+      {
+        "check_id": "dockerfile-missing-healthcheck",
+        "path": "Dockerfile",
+        "start": {
+          "line": 18,
+          "col": 1,
+          "offset": 519
+        },
+        "end": {
+          "line": 18,
+          "col": 8,
+          "offset": 526
+        },
+        "extra": {
+          "title": "Dockerfile missing healthcheck",
+          "message": "This Dockerfile EXPOSEs a port but defines no HEALTHCHECK instruction, so orchestrators cannot tell whether the container is actually serving traffic versus merely running. Add a HEALTHCHECK so liveness/readiness probes can detect and replace unhealthy containers.",
+          "confidence": "MEDIUM",
+          "severity": "INFO",
+          "lines": "EXPOSE ",
+          "metadata": {
+            "category": "security",
+            "confidence": "MEDIUM",
+            "cwe": [
+              "CWE-693: Protection Mechanism Failure"
+            ],
+            "impact": "LOW",
+            "likelihood": "LOW",
+            "owasp": [
+              "A05:2021",
+              "A02:2025"
+            ],
+            "subcategory": [
+              "audit"
+            ],
+            "technology": [
+              "docker"
+            ]
+          },
+          "fingerprint": "5022a15fbe91d710",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Add a HEALTHCHECK instruction so orchestrators can detect an unhealthy container.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 519,
+                "end_byte": 526,
+                "start_line": 18,
+                "end_line": 18
+              },
+              "strategy": "Add a HEALTHCHECK instruction so orchestrators can detect an unhealthy container.",
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding dockerfile-missing-healthcheck no longer fires in the changed region",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "dockerfile",
+          "before": "RUN sed -ri 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf \\\n    \u0026\u0026 chown -R www-data:www-data public/uploads",
+          "after": ""
+        },
+        "remediation": {
+          "description": "Add a HEALTHCHECK instruction so orchestrators can detect an unhealthy container.",
+          "has_autofix": false
+        }
+      },
+      {
+        "check_id": "php-xss",
+        "path": "public/index.php",
+        "start": {
+          "line": 23,
+          "col": 9,
+          "offset": 574
+        },
+        "end": {
+          "line": 23,
+          "col": 33,
+          "offset": 598
+        },
+        "extra": {
+          "title": "Cross-site scripting",
+          "message": "User input is written to the HTTP response (echo/print/printf) without output encoding, allowing reflected cross-site scripting. An attacker can inject HTML/JavaScript that runs in the victim's browser.",
+          "confidence": "HIGH",
+          "severity": "ERROR",
+          "lines": "echo json_encode($rows);",
+          "metadata": {
+            "ast-sanitizer-domination": true,
+            "category": "security",
+            "confidence": "HIGH",
+            "cwe": [
+              "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+            ],
+            "impact": "MEDIUM",
+            "likelihood": "HIGH",
+            "owasp": [
+              "A03:2021",
+              "A05:2025"
+            ],
+            "references": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+              "https://github.com/WWBN/AVideo/security/advisories/GHSA-mm5f-8q57-4fc4"
+            ],
+            "subcategory": [
+              "vuln"
+            ],
+            "technology": [
+              "php"
+            ]
+          },
+          "fingerprint": "ce829181a5235a67",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 574,
+                "end_byte": 598,
+                "start_line": 23,
+                "end_line": 23
+              },
+              "strategy": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+              "recognized_sanitizers": [
+                "(float)$X",
+                "(int)$X",
+                "esc_attr(...)",
+                "floatval(...)",
+                "htmlentities(...)",
+                "htmlspecialchars(...)",
+                "intval(...)",
+                "strip_tags(...)"
+              ],
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding php-xss no longer fires in the changed region (e.g. by routing the value through one of the recognized sanitizers: (float)$X, (int)$X, esc_attr(...), floatval(...), htmlentities(...), htmlspecialchars(...), intval(...), strip_tags(...))",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "php",
+          "before": "        $batches = new Batches($db);\n        $rows = $batches-\u003esearch($_GET['varietal'] ?? '', $_GET['max_moisture'] ?? '18.5');\n        header('Content-Type: application/json');",
+          "after": "        break;\n\n    case 'label':"
+        },
+        "remediation": {
+          "description": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+          "has_autofix": false
+        },
+        "dataflow_trace": {
+          "taint_source": {
+            "location": {
+              "line": 21,
+              "col": 34,
+              "offset": 457
+            },
+            "content": "$_GET"
+          },
+          "sink": {
+            "location": {
+              "line": 23,
+              "col": 9,
+              "offset": 574
+            },
+            "content": "echo json_encode($rows);"
+          }
+        }
+      },
+      {
+        "check_id": "php-xss",
+        "path": "public/index.php",
+        "start": {
+          "line": 28,
+          "col": 39,
+          "offset": 697
+        },
+        "end": {
+          "line": 28,
+          "col": 87,
+          "offset": 775
+        },
+        "extra": {
+          "title": "Cross-site scripting",
+          "message": "User input is written to the HTTP response (echo/print/printf) without output encoding, allowing reflected cross-site scripting. An attacker can inject HTML/JavaScript that runs in the victim's browser.",
+          "confidence": "HIGH",
+          "severity": "ERROR",
+          "lines": "echo $labels-\u003eprintBatchLabel($_POST['batch'], (int) ($_POST['copies'] ?? 1));",
+          "metadata": {
+            "ast-sanitizer-domination": true,
+            "category": "security",
+            "confidence": "HIGH",
+            "cwe": [
+              "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+            ],
+            "impact": "MEDIUM",
+            "likelihood": "HIGH",
+            "owasp": [
+              "A03:2021",
+              "A05:2025"
+            ],
+            "references": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+              "https://github.com/WWBN/AVideo/security/advisories/GHSA-mm5f-8q57-4fc4"
+            ],
+            "subcategory": [
+              "vuln"
+            ],
+            "technology": [
+              "php"
+            ]
+          },
+          "fingerprint": "1516b0e9b4c40dea",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 697,
+                "end_byte": 775,
+                "start_line": 28,
+                "end_line": 28
+              },
+              "strategy": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+              "recognized_sanitizers": [
+                "(float)$X",
+                "(int)$X",
+                "esc_attr(...)",
+                "floatval(...)",
+                "htmlentities(...)",
+                "htmlspecialchars(...)",
+                "intval(...)",
+                "strip_tags(...)"
+              ],
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding php-xss no longer fires in the changed region (e.g. by routing the value through one of the recognized sanitizers: (float)$X, (int)$X, esc_attr(...), floatval(...), htmlentities(...), htmlspecialchars(...), intval(...), strip_tags(...))",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "php",
+          "before": "\n    case 'label':\n        $labels = new Labels($config['label_printer']);",
+          "after": "        break;\n\n    case 'lab-report':"
+        },
+        "remediation": {
+          "description": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+          "has_autofix": false
+        },
+        "dataflow_trace": {
+          "taint_source": {
+            "location": {
+              "line": 28,
+              "col": 39,
+              "offset": 727
+            },
+            "content": "$_POST"
+          },
+          "sink": {
+            "location": {
+              "line": 28,
+              "col": 39,
+              "offset": 697
+            },
+            "content": "echo $labels-\u003eprintBatchLabel($_POST['batch'], (int) ($_POST['copies'] ?? 1));"
+          }
+        }
+      },
+      {
+        "check_id": "php-xss",
+        "path": "public/index.php",
+        "start": {
+          "line": 33,
+          "col": 31,
+          "offset": 881
+        },
+        "end": {
+          "line": 33,
+          "col": 67,
+          "offset": 939
+        },
+        "extra": {
+          "title": "Cross-site scripting",
+          "message": "User input is written to the HTTP response (echo/print/printf) without output encoding, allowing reflected cross-site scripting. An attacker can inject HTML/JavaScript that runs in the victim's browser.",
+          "confidence": "HIGH",
+          "severity": "ERROR",
+          "lines": "echo $reports-\u003eupload($_POST['batch'], $_FILES['report']);",
+          "metadata": {
+            "ast-sanitizer-domination": true,
+            "category": "security",
+            "confidence": "HIGH",
+            "cwe": [
+              "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+            ],
+            "impact": "MEDIUM",
+            "likelihood": "HIGH",
+            "owasp": [
+              "A03:2021",
+              "A05:2025"
+            ],
+            "references": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+              "https://github.com/WWBN/AVideo/security/advisories/GHSA-mm5f-8q57-4fc4"
+            ],
+            "subcategory": [
+              "vuln"
+            ],
+            "technology": [
+              "php"
+            ]
+          },
+          "fingerprint": "dfe1b7cdae1fcdd3",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 881,
+                "end_byte": 939,
+                "start_line": 33,
+                "end_line": 33
+              },
+              "strategy": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+              "recognized_sanitizers": [
+                "(float)$X",
+                "(int)$X",
+                "esc_attr(...)",
+                "floatval(...)",
+                "htmlentities(...)",
+                "htmlspecialchars(...)",
+                "intval(...)",
+                "strip_tags(...)"
+              ],
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding php-xss no longer fires in the changed region (e.g. by routing the value through one of the recognized sanitizers: (float)$X, (int)$X, esc_attr(...), floatval(...), htmlentities(...), htmlspecialchars(...), intval(...), strip_tags(...))",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "php",
+          "before": "\n    case 'lab-report':\n        $reports = new LabReports($config['upload_dir']);",
+          "after": "        break;\n\n    case 'route':"
+        },
+        "remediation": {
+          "description": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+          "has_autofix": false
+        },
+        "dataflow_trace": {
+          "taint_source": {
+            "location": {
+              "line": 33,
+              "col": 31,
+              "offset": 903
+            },
+            "content": "$_POST"
+          },
+          "sink": {
+            "location": {
+              "line": 33,
+              "col": 31,
+              "offset": 881
+            },
+            "content": "echo $reports-\u003eupload($_POST['batch'], $_FILES['report']);"
+          }
+        }
+      },
+      {
+        "check_id": "php-xss",
+        "path": "public/index.php",
+        "start": {
+          "line": 38,
+          "col": 30,
+          "offset": 1017
+        },
+        "end": {
+          "line": 38,
+          "col": 53,
+          "offset": 1061
+        },
+        "extra": {
+          "title": "Cross-site scripting",
+          "message": "User input is written to the HTTP response (echo/print/printf) without output encoding, allowing reflected cross-site scripting. An attacker can inject HTML/JavaScript that runs in the victim's browser.",
+          "confidence": "HIGH",
+          "severity": "ERROR",
+          "lines": "echo $routes-\u003erender($_GET['outlet'] ?? '');",
+          "metadata": {
+            "ast-sanitizer-domination": true,
+            "category": "security",
+            "confidence": "HIGH",
+            "cwe": [
+              "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+            ],
+            "impact": "MEDIUM",
+            "likelihood": "HIGH",
+            "owasp": [
+              "A03:2021",
+              "A05:2025"
+            ],
+            "references": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+              "https://github.com/WWBN/AVideo/security/advisories/GHSA-mm5f-8q57-4fc4"
+            ],
+            "subcategory": [
+              "vuln"
+            ],
+            "technology": [
+              "php"
+            ]
+          },
+          "fingerprint": "5c14d12f26a63dc3",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 1017,
+                "end_byte": 1061,
+                "start_line": 38,
+                "end_line": 38
+              },
+              "strategy": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+              "recognized_sanitizers": [
+                "(float)$X",
+                "(int)$X",
+                "esc_attr(...)",
+                "floatval(...)",
+                "htmlentities(...)",
+                "htmlspecialchars(...)",
+                "intval(...)",
+                "strip_tags(...)"
+              ],
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding php-xss no longer fires in the changed region (e.g. by routing the value through one of the recognized sanitizers: (float)$X, (int)$X, esc_attr(...), floatval(...), htmlentities(...), htmlspecialchars(...), intval(...), strip_tags(...))",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "php",
+          "before": "\n    case 'route':\n        $routes = new Routes($db);",
+          "after": "        break;\n\n    case 'page':"
+        },
+        "remediation": {
+          "description": "Encode the value for its output context before printing it: htmlspecialchars($v, ENT_QUOTES, 'UTF-8') for HTML body/attributes (and additional JavaScript/URL encoding when reflecting into a \u003cscript\u003e or a URL). In WordPress use the context escaper — esc_html() for element content, esc_attr() for attribute values, esc_url() for links, wp_kses_post() to keep a safe HTML subset. Prefer a templating engine that auto-escapes.",
+          "has_autofix": false
+        },
+        "dataflow_trace": {
+          "taint_source": {
+            "location": {
+              "line": 38,
+              "col": 30,
+              "offset": 1038
+            },
+            "content": "$_GET"
+          },
+          "sink": {
+            "location": {
+              "line": 38,
+              "col": 30,
+              "offset": 1017
+            },
+            "content": "echo $routes-\u003erender($_GET['outlet'] ?? '');"
+          }
+        }
+      },
+      {
+        "check_id": "php-file-inclusion",
+        "path": "public/index.php",
+        "start": {
+          "line": 43,
+          "col": 52,
+          "offset": 1173
+        },
+        "end": {
+          "line": 43,
+          "col": 65,
+          "offset": 1229
+        },
+        "extra": {
+          "title": "File inclusion",
+          "message": "User input controls the path passed to include/require. An attacker can include local files (disclosing source or config) or, with a permissive configuration or wrapper, execute attacker-controlled code (LFI/RFI).",
+          "confidence": "HIGH",
+          "severity": "CRITICAL",
+          "lines": "include __DIR__ . '/../templates/pages/' . $_GET['name']",
+          "metadata": {
+            "ast-sanitizer-domination": true,
+            "category": "security",
+            "confidence": "HIGH",
+            "cwe": [
+              "CWE-98: Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')"
+            ],
+            "impact": "HIGH",
+            "likelihood": "HIGH",
+            "owasp": [
+              "A03:2021",
+              "A05:2025"
+            ],
+            "php-include-scope": true,
+            "references": [
+              "https://owasp.org/www-community/attacks/Path_Traversal",
+              "https://github.com/advisories/GHSA-g4cf-pp4x-hqgw"
+            ],
+            "subcategory": [
+              "vuln"
+            ],
+            "technology": [
+              "php"
+            ]
+          },
+          "fingerprint": "cf2f21141b57ecd8",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Map the request value to a fixed allowlist of permitted files and include only the resolved entry. If a directory must be dynamic, reduce the input with basename() and prefix a constant, trusted base path; never pass raw request data to include/require.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 1173,
+                "end_byte": 1229,
+                "start_line": 43,
+                "end_line": 43
+              },
+              "strategy": "Map the request value to a fixed allowlist of permitted files and include only the resolved entry. If a directory must be dynamic, reduce the input with basename() and prefix a constant, trusted base path; never pass raw request data to include/require.",
+              "recognized_sanitizers": [
+                "basename(...)"
+              ],
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding php-file-inclusion no longer fires in the changed region (e.g. by routing the value through one of the recognized sanitizers: basename(...))",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "php",
+          "before": "\n    case 'page':\n        // Static help pages: harvesting guide, labelling rules, FAQ.",
+          "after": "        break;\n\n    default:"
+        },
+        "remediation": {
+          "description": "Map the request value to a fixed allowlist of permitted files and include only the resolved entry. If a directory must be dynamic, reduce the input with basename() and prefix a constant, trusted base path; never pass raw request data to include/require.",
+          "has_autofix": false
+        },
+        "dataflow_trace": {
+          "taint_source": {
+            "location": {
+              "line": 43,
+              "col": 52,
+              "offset": 1216
+            },
+            "content": "$_GET"
+          },
+          "sink": {
+            "location": {
+              "line": 43,
+              "col": 52,
+              "offset": 1173
+            },
+            "content": "include __DIR__ . '/../templates/pages/' . $_GET['name']"
+          }
+        }
+      },
+      {
+        "check_id": "php-object-injection",
+        "path": "src/Session.php",
+        "start": {
+          "line": 14,
+          "col": 46,
+          "offset": 317
+        },
+        "end": {
+          "line": 14,
+          "col": 68,
+          "offset": 353
+        },
+        "extra": {
+          "title": "Object injection",
+          "message": "Untrusted data is passed to unserialize(). PHP instantiates the encoded objects and runs their magic methods (__wakeup, __destruct), so an attacker who controls the serialized string can trigger PHP Object Injection and, with a suitable gadget chain, remote code execution.",
+          "confidence": "HIGH",
+          "severity": "CRITICAL",
+          "lines": "base64_decode($_COOKIE['honeyflow'])",
+          "metadata": {
+            "ast-sanitizer-domination": true,
+            "category": "security",
+            "confidence": "HIGH",
+            "cwe": [
+              "CWE-502: Deserialization of Untrusted Data"
+            ],
+            "impact": "HIGH",
+            "likelihood": "HIGH",
+            "owasp": [
+              "A08:2021",
+              "A08:2025"
+            ],
+            "references": [
+              "https://cheatsheetseries.owasp.org/cheatsheets/Deserialization_Cheat_Sheet.html",
+              "https://github.com/advisories/GHSA-v7m3-fpcr-h7m2",
+              "https://github.com/advisories/GHSA-rf88-776r-rcq9"
+            ],
+            "subcategory": [
+              "vuln"
+            ],
+            "technology": [
+              "php"
+            ]
+          },
+          "fingerprint": "3cbcc36a47ef194d",
+          "is_ignored": false,
+          "fix_info": {
+            "kind": "assisted",
+            "hint": "Do not unserialize untrusted input. Use json_decode() for data interchange. If unserialize() is unavoidable, pass the options ['allowed_classes' =\u003e false] (or an explicit class allowlist) — note that 'allowed_classes' =\u003e true still allows object injection.",
+            "contract": {
+              "unsafe_region": {
+                "start_byte": 317,
+                "end_byte": 353,
+                "start_line": 14,
+                "end_line": 14,
+                "function": "fromCookie"
+              },
+              "strategy": "Do not unserialize untrusted input. Use json_decode() for data interchange. If unserialize() is unavoidable, pass the options ['allowed_classes' =\u003e false] (or an explicit class allowlist) — note that 'allowed_classes' =\u003e true still allows object injection.",
+              "recognized_sanitizers": [
+                "hash_equals(...)"
+              ],
+              "acceptance_criteria": [
+                "the patched file parses without introducing new syntax errors",
+                "finding php-object-injection no longer fires in the changed region (e.g. by routing the value through one of the recognized sanitizers: hash_equals(...))",
+                "no new finding of equal-or-higher severity appears in the changed region"
+              ]
+            }
+          }
+        },
+        "context": {
+          "language": "php",
+          "before": "    public static function fromCookie(): self\n    {\n        if (isset($_COOKIE['honeyflow'])) {",
+          "after": "        }\n\n        return new self();",
+          "function": "fromCookie"
+        },
+        "remediation": {
+          "description": "Do not unserialize untrusted input. Use json_decode() for data interchange. If unserialize() is unavoidable, pass the options ['allowed_classes' =\u003e false] (or an explicit class allowlist) — note that 'allowed_classes' =\u003e true still allows object injection.",
+          "has_autofix": false
+        },
+        "dataflow_trace": {
+          "taint_source": {
+            "location": {
+              "line": 14,
+              "col": 46,
+              "offset": 331
+            },
+            "content": "$_COOKIE"
+          },
+          "sink": {
+            "location": {
+              "line": 14,
+              "col": 46,
+              "offset": 317
+            },
+            "content": "base64_decode($_COOKIE['honeyflow'])"
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2021-23337",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "lodash@4.17.20 is affected by CVE-2021-23337: Command Injection in lodash",
+          "severity": "ERROR",
+          "lines": "lodash@4.17.20",
+          "metadata": {
+            "aliases": [
+              "GHSA-35jh-r3h4-6jhm"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "4.17.21",
+            "package": "lodash",
+            "purl": "pkg:npm/lodash@4.17.20",
+            "version": "4.17.20"
+          },
+          "fingerprint": "CVE-2021-23337\u0000lodash@4.17.20",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade lodash 4.17.20 → 4.17.21: run `npm install lodash@4.17.21`.",
+            "ecosystem_plan": {
+              "package": "lodash",
+              "current_version": "4.17.20",
+              "target_version": "4.17.21",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install lodash@4.17.21"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-24785",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "moment@2.29.1 is affected by CVE-2022-24785: Path Traversal: 'dir/../../filename' in moment.locale",
+          "severity": "ERROR",
+          "lines": "moment@2.29.1",
+          "metadata": {
+            "aliases": [
+              "GHSA-8hfj-j24r-96c4"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "2.29.2",
+            "package": "moment",
+            "purl": "pkg:npm/moment@2.29.1",
+            "version": "2.29.1"
+          },
+          "fingerprint": "CVE-2022-24785\u0000moment@2.29.1",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade moment 2.29.1 → 2.29.2: run `npm install moment@2.29.2`.",
+            "ecosystem_plan": {
+              "package": "moment",
+              "current_version": "2.29.1",
+              "target_version": "2.29.2",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install moment@2.29.2"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-31129",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "moment@2.29.1 is affected by CVE-2022-31129: Moment.js vulnerable to Inefficient Regular Expression Complexity",
+          "severity": "ERROR",
+          "lines": "moment@2.29.1",
+          "metadata": {
+            "aliases": [
+              "GHSA-wc69-rhjr-hc9g"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "2.29.4",
+            "package": "moment",
+            "purl": "pkg:npm/moment@2.29.1",
+            "version": "2.29.1"
+          },
+          "fingerprint": "CVE-2022-31129\u0000moment@2.29.1",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade moment 2.29.1 → 2.29.4: run `npm install moment@2.29.4`.",
+            "ecosystem_plan": {
+              "package": "moment",
+              "current_version": "2.29.1",
+              "target_version": "2.29.4",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install moment@2.29.4"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2025-13465",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "lodash@4.17.20 is affected by CVE-2025-13465: Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions",
+          "severity": "ERROR",
+          "lines": "lodash@4.17.20",
+          "metadata": {
+            "aliases": [
+              "GHSA-xxjr-mmjv-4gpg"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "4.17.23",
+            "package": "lodash",
+            "purl": "pkg:npm/lodash@4.17.20",
+            "version": "4.17.20"
+          },
+          "fingerprint": "CVE-2025-13465\u0000lodash@4.17.20",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade lodash 4.17.20 → 4.17.23: run `npm install lodash@4.17.23`.",
+            "ecosystem_plan": {
+              "package": "lodash",
+              "current_version": "4.17.20",
+              "target_version": "4.17.23",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install lodash@4.17.23"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-4800",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "lodash@4.17.20 is affected by CVE-2026-4800: lodash vulnerable to Code Injection via `_.template` imports key names",
+          "severity": "ERROR",
+          "lines": "lodash@4.17.20",
+          "metadata": {
+            "aliases": [
+              "GHSA-r5fr-rjxr-66jc"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "4.18.0",
+            "package": "lodash",
+            "purl": "pkg:npm/lodash@4.17.20",
+            "version": "4.17.20"
+          },
+          "fingerprint": "CVE-2026-4800\u0000lodash@4.17.20",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade lodash 4.17.20 → 4.18.0: run `npm install lodash@4.18.0`.",
+            "ecosystem_plan": {
+              "package": "lodash",
+              "current_version": "4.17.20",
+              "target_version": "4.18.0",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install lodash@4.18.0"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2020-11022",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "jquery@3.4.1 is affected by CVE-2020-11022: Potential XSS vulnerability in jQuery",
+          "severity": "WARNING",
+          "lines": "jquery@3.4.1",
+          "metadata": {
+            "aliases": [
+              "GHSA-gxr4-xjj5-5px2"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "3.5.0",
+            "package": "jquery",
+            "purl": "pkg:npm/jquery@3.4.1",
+            "version": "3.4.1"
+          },
+          "fingerprint": "CVE-2020-11022\u0000jquery@3.4.1",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade jquery 3.4.1 → 3.5.0: run `npm install jquery@3.5.0`.",
+            "ecosystem_plan": {
+              "package": "jquery",
+              "current_version": "3.4.1",
+              "target_version": "3.5.0",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install jquery@3.5.0"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2020-11023",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "jquery@3.4.1 is affected by CVE-2020-11023: Potential XSS vulnerability in jQuery",
+          "severity": "WARNING",
+          "lines": "jquery@3.4.1",
+          "metadata": {
+            "aliases": [
+              "GHSA-jpcq-cgw6-v4j6"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "3.5.0",
+            "package": "jquery",
+            "purl": "pkg:npm/jquery@3.4.1",
+            "version": "3.4.1"
+          },
+          "fingerprint": "CVE-2020-11023\u0000jquery@3.4.1",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade jquery 3.4.1 → 3.5.0: run `npm install jquery@3.5.0`.",
+            "ecosystem_plan": {
+              "package": "jquery",
+              "current_version": "3.4.1",
+              "target_version": "3.5.0",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install jquery@3.5.0"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2020-28500",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "lodash@4.17.20 is affected by CVE-2020-28500: Regular Expression Denial of Service (ReDoS) in lodash",
+          "severity": "WARNING",
+          "lines": "lodash@4.17.20",
+          "metadata": {
+            "aliases": [
+              "GHSA-29mw-wpgm-hmr9"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "4.17.21",
+            "package": "lodash",
+            "purl": "pkg:npm/lodash@4.17.20",
+            "version": "4.17.20"
+          },
+          "fingerprint": "CVE-2020-28500\u0000lodash@4.17.20",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade lodash 4.17.20 → 4.17.21: run `npm install lodash@4.17.21`.",
+            "ecosystem_plan": {
+              "package": "lodash",
+              "current_version": "4.17.20",
+              "target_version": "4.17.21",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install lodash@4.17.21"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-2950",
+        "path": "assets/package-lock.json",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "lodash@4.17.20 is affected by CVE-2026-2950: lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`",
+          "severity": "WARNING",
+          "lines": "lodash@4.17.20",
+          "metadata": {
+            "aliases": [
+              "GHSA-f23m-r3pf-42rh"
+            ],
+            "ecosystem": "npm",
+            "fix_confidence": "structured",
+            "fixed_version": "4.18.0",
+            "package": "lodash",
+            "purl": "pkg:npm/lodash@4.17.20",
+            "version": "4.17.20"
+          },
+          "fingerprint": "CVE-2026-2950\u0000lodash@4.17.20",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade lodash 4.17.20 → 4.18.0: run `npm install lodash@4.18.0`.",
+            "ecosystem_plan": {
+              "package": "lodash",
+              "current_version": "4.17.20",
+              "target_version": "4.18.0",
+              "ecosystem": "npm",
+              "manager": "npm",
+              "direct": true,
+              "anchor_file": "assets/package-lock.json",
+              "commands": [
+                "npm install lodash@4.18.0"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2020-36326",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "phpmailer/phpmailer@v6.4.0 is affected by CVE-2020-36326: Object injection in PHPMailer/PHPMailer",
+          "severity": "CRITICAL",
+          "lines": "phpmailer/phpmailer@v6.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-m298-fh5c-jc66"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "6.4.1",
+            "package": "phpmailer/phpmailer",
+            "purl": "pkg:composer/phpmailer/phpmailer@v6.4.0",
+            "version": "v6.4.0"
+          },
+          "fingerprint": "CVE-2020-36326\u0000phpmailer/phpmailer@v6.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade phpmailer/phpmailer v6.4.0 → 6.4.1: run `composer require phpmailer/phpmailer:6.4.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "phpmailer/phpmailer",
+              "current_version": "v6.4.0",
+              "target_version": "6.4.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require phpmailer/phpmailer:6.4.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2021-46743",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "firebase/php-jwt@v5.5.1 is affected by CVE-2021-46743: Firebase PHP-JWT key/algorithm type confusion",
+          "severity": "CRITICAL",
+          "lines": "firebase/php-jwt@v5.5.1",
+          "metadata": {
+            "aliases": [
+              "GHSA-8xf4-w7qw-pjjw"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "6.0.0",
+            "package": "firebase/php-jwt",
+            "purl": "pkg:composer/firebase/php-jwt@v5.5.1",
+            "version": "v5.5.1"
+          },
+          "fingerprint": "CVE-2021-46743\u0000firebase/php-jwt@v5.5.1",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade firebase/php-jwt v5.5.1 → 6.0.0: run `composer require firebase/php-jwt:6.0.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "firebase/php-jwt",
+              "current_version": "v5.5.1",
+              "target_version": "6.0.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require firebase/php-jwt:6.0.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-46633",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-46633: Twig: PHP code injection via `{% use %}` template name",
+          "severity": "CRITICAL",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-7p85-w9px-jpjp"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.26.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-46633\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.26.0: run `composer require twig/twig:3.26.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.26.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.26.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-48805",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-48805: Twig: Sandbox state regression in deprecated internal wrappers in `src/Resources/core.php`",
+          "severity": "CRITICAL",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-p42q-9prx-q5wq"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.27.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-48805\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.27.0: run `composer require twig/twig:3.27.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.27.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.27.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-48806",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-48806: Twig: Sandbox `__toString()` policy bypass via dynamic mapping keys",
+          "severity": "CRITICAL",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-5v5v-ww74-355v"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.27.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-48806\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.27.0: run `composer require twig/twig:3.27.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.27.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.27.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-48807",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-48807: Twig: Sandbox `__toString()` policy bypass via `Traversable` in `join` and `replace` filters",
+          "severity": "CRITICAL",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-8x9c-rmqh-456c"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.27.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-48807\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.27.0: run `composer require twig/twig:3.27.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.27.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.27.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2021-34551",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "phpmailer/phpmailer@v6.4.0 is affected by CVE-2021-34551: Remote Code Execution vulnerability in PHPMailer 6.4.1 running on Windows",
+          "severity": "ERROR",
+          "lines": "phpmailer/phpmailer@v6.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-7q44-r25x-wm4q"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "6.5.0",
+            "package": "phpmailer/phpmailer",
+            "purl": "pkg:composer/phpmailer/phpmailer@v6.4.0",
+            "version": "v6.4.0"
+          },
+          "fingerprint": "CVE-2021-34551\u0000phpmailer/phpmailer@v6.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade phpmailer/phpmailer v6.4.0 → 6.5.0: run `composer require phpmailer/phpmailer:6.5.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "phpmailer/phpmailer",
+              "current_version": "v6.4.0",
+              "target_version": "6.5.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require phpmailer/phpmailer:6.5.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2021-3603",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "phpmailer/phpmailer@v6.4.0 is affected by CVE-2021-3603: PHPMailer untrusted code may be run from an overridden address validator",
+          "severity": "ERROR",
+          "lines": "phpmailer/phpmailer@v6.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-77mr-wc79-m8j3"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "6.5.0",
+            "package": "phpmailer/phpmailer",
+            "purl": "pkg:composer/phpmailer/phpmailer@v6.4.0",
+            "version": "v6.4.0"
+          },
+          "fingerprint": "CVE-2021-3603\u0000phpmailer/phpmailer@v6.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade phpmailer/phpmailer v6.4.0 → 6.5.0: run `composer require phpmailer/phpmailer:6.5.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "phpmailer/phpmailer",
+              "current_version": "v6.4.0",
+              "target_version": "6.5.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require phpmailer/phpmailer:6.5.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-24775",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/psr7@2.1.0 is affected by CVE-2022-24775: Improper Input Validation in guzzlehttp/psr7",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/psr7@2.1.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-q7rv-6hp3-vh96"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "2.1.1",
+            "package": "guzzlehttp/psr7",
+            "purl": "pkg:composer/guzzlehttp/psr7@2.1.0",
+            "version": "2.1.0"
+          },
+          "fingerprint": "CVE-2022-24775\u0000guzzlehttp/psr7@2.1.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/psr7 2.1.0 → 2.1.1: run `composer require guzzlehttp/psr7:2.1.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/psr7",
+              "current_version": "2.1.0",
+              "target_version": "2.1.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/psr7:2.1.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-29248",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2022-29248: Cross-domain cookie leakage in Guzzle",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-cwmx-hcrq-mhc3"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.4.3",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2022-29248\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.4.3: run `composer require guzzlehttp/guzzle:7.4.3 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.4.3",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.4.3 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-31042",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2022-31042: Failure to strip the Cookie header on change in host or HTTP downgrade",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-f2wf-25xc-69c9"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.4.4",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2022-31042\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.4.4: run `composer require guzzlehttp/guzzle:7.4.4 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.4.4",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.4.4 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-31043",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2022-31043: Fix failure to strip Authorization header on HTTP downgrade",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-w248-ffj2-4v5q"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.4.4",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2022-31043\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.4.4: run `composer require guzzlehttp/guzzle:7.4.4 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.4.4",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.4.4 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-31090",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2022-31090: CURLOPT_HTTPAUTH option not cleared on change of origin",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-25mq-v84q-4j7r"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.4.5",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2022-31090\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.4.5: run `composer require guzzlehttp/guzzle:7.4.5 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.4.5",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.4.5 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-31091",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2022-31091: Change in port should be considered a change in origin",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-q559-8m2m-g699"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.4.5",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2022-31091\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.4.5: run `composer require guzzlehttp/guzzle:7.4.5 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.4.5",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.4.5 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2022-39261",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2022-39261: Twig may load a template outside a configured directory when using the filesystem loader",
+          "severity": "ERROR",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-52m2-vc4m-jj33"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.4.3",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2022-39261\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.4.3: run `composer require twig/twig:3.4.3 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.4.3",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.4.3 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2024-45411",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2024-45411: Twig has a possible sandbox bypass",
+          "severity": "ERROR",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-6j75-5wfj-gh66"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.11.1",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2024-45411\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.11.1: run `composer require twig/twig:3.11.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.11.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.11.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-46638",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-46638: Twig: `{% sandbox %}{% include %}` skips checkSecurity() on cached templates (incomplete fix for CVE-2024-45411)",
+          "severity": "ERROR",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-7fxw-r6jv-74c8"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.26.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-46638\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.26.0: run `composer require twig/twig:3.26.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.26.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.26.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-47732",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-47732: Twig: Sandbox: multiple `__toString()` policy bypasses via unguarded string coercion points",
+          "severity": "ERROR",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-pr2w-4gpj-cpq4"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.26.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-47732\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.26.0: run `composer require twig/twig:3.26.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.26.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.26.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-48808",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-48808: Twig: Sandbox property allowlist bypass via the `column` filter under `SourcePolicyInterface`",
+          "severity": "ERROR",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-h8vq-8gpg-mhcg"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.27.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-48808\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.27.0: run `composer require twig/twig:3.27.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.27.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.27.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-49981",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-49981: Twig: Sandbox filter, tag and function allow-list bypass when sandbox state changes between renders for a cached `Template`",
+          "severity": "ERROR",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-529h-vh3j-85hq"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.27.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-49981\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.27.0: run `composer require twig/twig:3.27.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.27.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.27.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-67354",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-67354: Guzzle: URI fragments disclosed in redirect Referer headers",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-h95v-h523-3mw8"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.15.1",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-67354\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.15.1: run `composer require guzzlehttp/guzzle:7.15.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.15.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.15.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-67355",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-67355: Guzzle: Host-only cookie scope is not preserved",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-wm3w-8rrp-j577"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.15.1",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-67355\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.15.1: run `composer require guzzlehttp/guzzle:7.15.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.15.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.15.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-69246",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-69246: Guzzle: Noncanonical host can bypass host-based checks",
+          "severity": "ERROR",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-v5mv-p594-2x33"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.15.2",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-69246\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.15.2: run `composer require guzzlehttp/guzzle:7.15.2 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.15.2",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.15.2 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2023-29197",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/psr7@2.1.0 is affected by CVE-2023-29197: Improper header name validation in guzzlehttp/psr7",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/psr7@2.1.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-wxmh-65f7-jcvw"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "2.4.5",
+            "package": "guzzlehttp/psr7",
+            "purl": "pkg:composer/guzzlehttp/psr7@2.1.0",
+            "version": "2.1.0"
+          },
+          "fingerprint": "CVE-2023-29197\u0000guzzlehttp/psr7@2.1.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/psr7 2.1.0 → 2.4.5: run `composer require guzzlehttp/psr7:2.4.5 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/psr7",
+              "current_version": "2.1.0",
+              "target_version": "2.4.5",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/psr7:2.4.5 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2025-45769",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "firebase/php-jwt@v5.5.1 is affected by CVE-2025-45769: php-jwt contains weak encryption",
+          "severity": "WARNING",
+          "lines": "firebase/php-jwt@v5.5.1",
+          "metadata": {
+            "aliases": [
+              "GHSA-2x45-7fc3-mxwq"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.0.0",
+            "package": "firebase/php-jwt",
+            "purl": "pkg:composer/firebase/php-jwt@v5.5.1",
+            "version": "v5.5.1"
+          },
+          "fingerprint": "CVE-2025-45769\u0000firebase/php-jwt@v5.5.1",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade firebase/php-jwt v5.5.1 → 7.0.0: run `composer require firebase/php-jwt:7.0.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "firebase/php-jwt",
+              "current_version": "v5.5.1",
+              "target_version": "7.0.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require firebase/php-jwt:7.0.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-46628",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-46628: Twig: The `spaceless` filter implicitly marks its output as safe",
+          "severity": "WARNING",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-4j38-f5cw-54h7"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.26.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-46628\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.26.0: run `composer require twig/twig:3.26.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.26.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.26.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-46635",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-46635: Twig: Sandbox property allowlist bypass via the `column` filter (array_column on objects)",
+          "severity": "WARNING",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-vcc8-phrv-43wj"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.26.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-46635\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.26.0: run `composer require twig/twig:3.26.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.26.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.26.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-47730",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2026-47730: Twig: XSS in profiler HtmlDumper via unescaped template and profile names",
+          "severity": "WARNING",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-2g2g-8p8h-fgwm"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.26.0",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2026-47730\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.26.0: run `composer require twig/twig:3.26.0 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.26.0",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.26.0 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-48998",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/psr7@2.1.0 is affected by CVE-2026-48998: guzzlehttp/psr7 has Host Confusion via Authority Reinterpretation",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/psr7@2.1.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-34xg-wgjx-8xph"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "2.10.2",
+            "package": "guzzlehttp/psr7",
+            "purl": "pkg:composer/guzzlehttp/psr7@2.1.0",
+            "version": "2.1.0"
+          },
+          "fingerprint": "CVE-2026-48998\u0000guzzlehttp/psr7@2.1.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/psr7 2.1.0 → 2.10.2: run `composer require guzzlehttp/psr7:2.10.2 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/psr7",
+              "current_version": "2.1.0",
+              "target_version": "2.10.2",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/psr7:2.10.2 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-49214",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/psr7@2.1.0 is affected by CVE-2026-49214: guzzlehttp/psr7 has CRLF Injection via URI Host Component",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/psr7@2.1.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-hq7v-mx3g-29hw"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "2.10.2",
+            "package": "guzzlehttp/psr7",
+            "purl": "pkg:composer/guzzlehttp/psr7@2.1.0",
+            "version": "2.1.0"
+          },
+          "fingerprint": "CVE-2026-49214\u0000guzzlehttp/psr7@2.1.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/psr7 2.1.0 → 2.10.2: run `composer require guzzlehttp/psr7:2.10.2 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/psr7",
+              "current_version": "2.1.0",
+              "target_version": "2.10.2",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/psr7:2.10.2 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-55568",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-55568: guzzlehttp/guzzle: Silent HTTPS-Proxy Downgrade to Cleartext",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-wpwq-4j6v-78m3"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.12.1",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-55568\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.12.1: run `composer require guzzlehttp/guzzle:7.12.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.12.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.12.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-55766",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/psr7@2.1.0 is affected by CVE-2026-55766: guzzlehttp/psr7: CRLF Injection in HTTP Start-Line Serialization",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/psr7@2.1.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-vm85-hxw5-5432"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "2.12.1",
+            "package": "guzzlehttp/psr7",
+            "purl": "pkg:composer/guzzlehttp/psr7@2.1.0",
+            "version": "2.1.0"
+          },
+          "fingerprint": "CVE-2026-55766\u0000guzzlehttp/psr7@2.1.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/psr7 2.1.0 → 2.12.1: run `composer require guzzlehttp/psr7:2.12.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/psr7",
+              "current_version": "2.1.0",
+              "target_version": "2.12.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/psr7:2.12.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-55767",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-55767: guzzlehttp/guzzle: Dot-Only Cookie Domains Match All Hosts",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-cwxw-98qj-8qjx"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.12.1",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-55767\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.12.1: run `composer require guzzlehttp/guzzle:7.12.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.12.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.12.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-59882",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/psr7@2.1.0 is affected by CVE-2026-59882: guzzlehttp/psr7: Host Confusion via Weak URI Host Validation",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/psr7@2.1.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-c2w2-prh8-qm98"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "2.12.3",
+            "package": "guzzlehttp/psr7",
+            "purl": "pkg:composer/guzzlehttp/psr7@2.1.0",
+            "version": "2.1.0"
+          },
+          "fingerprint": "CVE-2026-59882\u0000guzzlehttp/psr7@2.1.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/psr7 2.1.0 → 2.12.3: run `composer require guzzlehttp/psr7:2.12.3 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/psr7",
+              "current_version": "2.1.0",
+              "target_version": "2.12.3",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/psr7:2.12.3 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-59883",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-59883: Guzzle: Cookie Disclosure and Injection via IP-Address Domains",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-g446-98w2-8p5w"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.12.3",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-59883\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.12.3: run `composer require guzzlehttp/guzzle:7.12.3 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.12.3",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.12.3 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-67339",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-67339: Guzzle: Proxy-Authorization headers can be sent to origin servers",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-94pj-82f3-465w"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.14.2",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-67339\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.14.2: run `composer require guzzlehttp/guzzle:7.14.2 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.14.2",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.14.2 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-67353",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-67353: Guzzle: Unbounded response cookies risk denial of service",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-f283-ghqc-fg79"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.15.1",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-67353\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.15.1: run `composer require guzzlehttp/guzzle:7.15.1 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.15.1",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.15.1 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2026-69245",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "guzzlehttp/guzzle@7.4.0 is affected by CVE-2026-69245: Guzzle: Noncanonical cookie domain keeps subdomain scope",
+          "severity": "WARNING",
+          "lines": "guzzlehttp/guzzle@7.4.0",
+          "metadata": {
+            "aliases": [
+              "GHSA-f7vp-7xgx-4w4r"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "7.15.2",
+            "package": "guzzlehttp/guzzle",
+            "purl": "pkg:composer/guzzlehttp/guzzle@7.4.0",
+            "version": "7.4.0"
+          },
+          "fingerprint": "CVE-2026-69245\u0000guzzlehttp/guzzle@7.4.0",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade guzzlehttp/guzzle 7.4.0 → 7.15.2: run `composer require guzzlehttp/guzzle:7.15.2 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "guzzlehttp/guzzle",
+              "current_version": "7.4.0",
+              "target_version": "7.15.2",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require guzzlehttp/guzzle:7.15.2 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2024-51754",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2024-51754: Twig has unguarded calls to `__toString()` when nesting an object into an array",
+          "severity": "INFO",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-6377-hfv9-hqf6"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.11.2",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2024-51754\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.11.2: run `composer require twig/twig:3.11.2 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.11.2",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.11.2 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      },
+      {
+        "check_id": "CVE-2024-51755",
+        "path": "composer.lock",
+        "start": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "end": {
+          "line": 1,
+          "col": 1,
+          "offset": 0
+        },
+        "extra": {
+          "message": "twig/twig@v3.4.2 is affected by CVE-2024-51755: Twig has unguarded calls to `__isset()` and to array-accesses when the sandbox is enabled",
+          "severity": "INFO",
+          "lines": "twig/twig@v3.4.2",
+          "metadata": {
+            "aliases": [
+              "GHSA-jjxq-ff2g-95vh"
+            ],
+            "ecosystem": "composer",
+            "fix_confidence": "structured",
+            "fixed_version": "3.11.2",
+            "package": "twig/twig",
+            "purl": "pkg:composer/twig/twig@v3.4.2",
+            "version": "v3.4.2"
+          },
+          "fingerprint": "CVE-2024-51755\u0000twig/twig@v3.4.2",
+          "is_ignored": false,
+          "labels": [
+            "dependency-vuln"
+          ],
+          "fix_info": {
+            "kind": "ecosystem",
+            "hint": "Upgrade twig/twig v3.4.2 → 3.11.2: run `composer require twig/twig:3.11.2 --with-all-dependencies`.",
+            "ecosystem_plan": {
+              "package": "twig/twig",
+              "current_version": "v3.4.2",
+              "target_version": "3.11.2",
+              "ecosystem": "composer",
+              "manager": "composer",
+              "direct": true,
+              "anchor_file": "composer.lock",
+              "commands": [
+                "composer require twig/twig:3.11.2 --with-all-dependencies"
+              ],
+              "risk": "low"
+            }
+          }
+        }
+      }
+    ],
+    "errors": null,
+    "paths": {
+      "scanned": [
+        ".gitignore",
+        "Dockerfile",
+        "README.md",
+        "assets/build.js",
+        "assets/package.json",
+        "assets/routes.json",
+        "composer.json",
+        "config/config.php",
+        "public/index.php",
+        "public/uploads/.gitkeep",
+        "src/Batches.php",
+        "src/Db.php",
+        "src/LabReports.php",
+        "src/Labels.php",
+        "src/Routes.php",
+        "src/Session.php",
+        "templates/pages/harvesting.html"
+      ]
+    },
+    "version": "v0.101.0-81-gfa1ab94dc-dirty",
+    "run": {
+      "target": ".",
+      "scan": {
+        "categories": [
+          "secrets",
+          "security"
+        ],
+        "code": true,
+        "dependencies": true,
+        "cross_file": false
+      },
+      "repository": {
+        "on_default_branch": false
+      },
+      "findings": {
+        "total": 57,
+        "by_category": {
+          "security": 8,
+          "uncategorized": 49
+        },
+        "by_severity": {
+          "CRITICAL": 8,
+          "HIGH": 26,
+          "LOW": 3,
+          "MEDIUM": 20
+        }
+      },
+      "upload": {
+        "requested": false,
+        "performed": false,
+        "skip_reason": "incognito",
+        "findings_uploaded": 0,
+        "findings_total": 0,
+        "truncated": false,
+        "dep_vex_uploaded": 0
+      },
+      "dependencies": {
+        "requested": true,
+        "performed": true,
+        "packages_submitted": 17,
+        "packages_correlated": 8,
+        "packages_uncorrelatable": 0,
+        "advisories": 49,
+        "ecosystems": [
+          {
+            "name": "composer",
+            "submitted": 13,
+            "correlated": 5
+          },
+          {
+            "name": "npm",
+            "submitted": 4,
+            "correlated": 3
+          }
+        ]
+      },
+      "cross_file": {
+        "requested": false,
+        "performed": false,
+        "skip_reason": "disabled"
+      }
+    },
+    "rule_findings": [
+      {
+        "id": "php-xss",
+        "count": 4,
+        "files_hit": 1
+      },
+      {
+        "id": "dockerfile-missing-healthcheck",
+        "count": 1,
+        "files_hit": 1
+      },
+      {
+        "id": "dockerfile-missing-user-instruction",
+        "count": 1,
+        "files_hit": 1
+      },
+      {
+        "id": "php-file-inclusion",
+        "count": 1,
+        "files_hit": 1
+      },
+      {
+        "id": "php-object-injection",
+        "count": 1,
+        "files_hit": 1
+      }
+    ],
+    "rule_tiers": [
+      {
+        "id": "js-express-path-traversal",
+        "regex_hits": 20,
+        "ast_hits": 20
+      },
+      {
+        "id": "php-xss",
+        "regex_hits": 20,
+        "ast_hits": 14,
+        "uncorroborated_hits": 4
+      },
+      {
+        "id": "php-file-inclusion",
+        "regex_hits": 11,
+        "ast_hits": 13,
+        "unattributed_hits": 3
+      },
+      {
+        "id": "javascript-insecure-temporary-file",
+        "regex_hits": 8,
+        "ast_hits": 8
+      },
+      {
+        "id": "php-sql-injection",
+        "regex_hits": 6,
+        "ast_hits": 4
+      },
+      {
+        "id": "php-command-injection",
+        "regex_hits": 4,
+        "ast_hits": 2
+      },
+      {
+        "id": "php-object-injection",
+        "regex_hits": 4,
+        "ast_hits": 4
+      },
+      {
+        "id": "php-unrestricted-upload",
+        "regex_hits": 4,
+        "ast_hits": 4
+      },
+      {
+        "id": "php-xpath-injection",
+        "regex_hits": 2,
+        "ast_hits": 2
+      },
+      {
+        "id": "php-reverse-shell",
+        "regex_hits": 1,
+        "ast_hits": 1
+      },
+      {
+        "id": "dockerfile-missing-healthcheck",
+        "regex_hits": 0,
+        "ast_hits": 0,
+        "unattributed": true
+      },
+      {
+        "id": "dockerfile-missing-user-instruction",
+        "regex_hits": 0,
+        "ast_hits": 0,
+        "unattributed": true
+      },
+      {
+        "id": "javascript-cleartext-storage",
+        "regex_hits": 0,
+        "ast_hits": 0,
+        "unattributed_hits": 1
+      },
+      {
+        "id": "javascript-empty-password-json",
+        "regex_hits": 0,
+        "ast_hits": 61
+      },
+      {
+        "id": "js-git-dependency-unpinned",
+        "regex_hits": 0,
+        "ast_hits": 17,
+        "unattributed_hits": 1
+      },
+      {
+        "id": "php-composer-dependency-unpinned",
+        "regex_hits": 0,
+        "ast_hits": 29,
+        "unattributed_hits": 1
+      }
+    ]
+  },
+  "file_hashes": {
+    "Dockerfile": "a7a98158c8215a19a2492de0860f579488837637d68713721cf6cc24d22af5fd",
+    "assets/package-lock.json": "3bd8ed2f394036bac5a9fd32d9ad79da1ca68c4301e922ad1e9f8fb31be69240",
+    "composer.lock": "452de4b9bb0201887498af401d00b1d6fa3bf9bf1ae8aa33bd963dc8b6aac9a3",
+    "public/index.php": "8ac304cfaeb99b3b4484d9ec813e750e614ed0501565c13489c198fbe6482d29",
+    "src/Session.php": "ef5f681efcec1c92a1bf04fb9a5c05bf6715adec304212244790a6d8e290fb9e"
+  },
+  "root": "/pub/go/src/github.com/arlimus/php-honey"
+}

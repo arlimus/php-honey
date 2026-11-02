@@ -1,0 +1,14 @@
+{
+  "name": "php-honey-assets",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HoneyFlow front-end: delivery route map and yield charts",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "jquery": "3.4.1",
+    "lodash": "4.17.20",
+    "moment": "2.29.1"
+  }
+}
