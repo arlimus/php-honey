@@ -1,4 +1,4 @@
-FROM php:8.3.12-apache
+FROM php:8.3.36-apache
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends cups-client unzip \
